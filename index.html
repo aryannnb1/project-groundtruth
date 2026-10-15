@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Groundtruth — Master Checklist</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#121a2b;--panel2:#182238;--line:#293650;--text:#edf2fb;--muted:#a3b0c7;--accent:#8ab4ff;--good:#83d9ad}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#172642 0,#0b1020 55%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 18px 70px}.eyebrow{font-size:.75rem;letter-spacing:.15em;color:var(--accent);font-weight:800}
+h1{font-size:clamp(1.8rem,5vw,3rem);line-height:1.08;margin:.5rem 0}.subtitle{color:var(--muted);margin:0 0 24px}
+.panel,.phase{background:rgba(18,26,43,.94);border:1px solid var(--line);border-radius:18px}
+.panel{padding:20px;margin-bottom:16px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.stat{background:var(--panel2);border-radius:12px;padding:12px}.stat small{display:block;color:var(--muted);font-size:.72rem;letter-spacing:.08em}.stat strong{font-size:1.6rem}
+.progress{height:8px;background:#293650;border-radius:99px;overflow:hidden;margin-top:10px}.progress div{height:100%;width:0;background:var(--good);transition:width .2s}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.toolbar button,.actions button{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;padding:9px 13px;cursor:pointer;font:inherit}.toolbar button.active{background:var(--accent);color:#091326;border-color:var(--accent);font-weight:700}
+.phase{margin:12px 0;overflow:hidden}.phase-head{padding:16px;cursor:pointer;display:flex;gap:14px;align-items:center;justify-content:space-between}.phase-head h2{font-size:1.03rem;margin:0}.phase-head p{margin:3px 0 0;color:var(--muted);font-size:.85rem}.phase-progress{height:4px;background:#293650}.phase-progress div{height:100%;background:var(--accent)}
+.phase-body{padding:5px 16px 16px;border-top:1px solid var(--line)}.item{display:flex;gap:12px;padding:13px 2px;border-bottom:1px solid rgba(41,54,80,.7);align-items:flex-start}.item:last-of-type{border-bottom:0}.item input{width:18px;height:18px;accent-color:var(--good);margin-top:3px;flex-shrink:0}.item label{cursor:pointer;flex:1}.item strong{display:block;font-weight:650}.item span{display:block;color:var(--muted);font-size:.9rem;margin-top:3px}.item.done strong{text-decoration:line-through;color:#91a0b7}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.actions .primary{background:var(--accent);color:#091326;border-color:var(--accent);font-weight:700}
+footer{color:var(--muted);font-size:.82rem;margin-top:20px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--good);color:#07150e;padding:10px 16px;border-radius:12px;font-weight:700;display:none}
+@media(max-width:520px){main{padding:22px 12px 48px}.panel{padding:15px}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:1.3rem}.phase-head{padding:13px}.phase-body{padding:4px 13px 13px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">PERSONAL ENGINEERING CURRICULUM</div>
+  <h1>Project Groundtruth</h1>
+  <p class="subtitle">AI & Computer Vision Engineering · Master Checklist · Year 1</p>
+  <section class="panel">
+    <div style="display:flex;align-items:end;justify-content:space-between;gap:12px">
+      <div><div id="percent" style="font-size:2.2rem;font-weight:800;line-height:1">0%</div><div id="count" style="color:var(--muted);font-size:.9rem;margin-top:5px">0 of 52 competencies completed</div></div>
+      <button id="exportMd" class="primary" style="border:1px solid var(--accent);background:var(--accent);color:#091326;border-radius:10px;padding:10px 12px;font:inherit;font-weight:700;cursor:pointer">Export Markdown</button>
+    </div>
+    <div class="progress"><div id="mainBar"></div></div>
+    <div class="stats">
+      <div class="stat"><small>REMAINING</small><strong id="remaining">52</strong></div>
+      <div class="stat"><small>PHASES</small><strong>7</strong></div>
+      <div class="stat"><small>COMPLETED PHASES</small><strong id="phasesDone">0/7</strong></div>
+    </div>
+    <div class="toolbar" aria-label="Filter checklist">
+      <button class="active" data-filter="all">All items</button><button data-filter="remaining">Remaining</button><button data-filter="done">Completed</button>
+    </div>
+    <div style="color:var(--muted);font-size:.82rem">Your progress saves automatically in this browser on this device. Export a backup periodically.</div>
+  </section>
+  <div id="checklist"></div>
+  <section class="panel">
+    <strong>Progress backup</strong>
+    <p style="color:var(--muted);margin:.4rem 0">Export a JSON backup to move your progress to another browser or device, or import a previous backup.</p>
+    <div class="actions"><button id="exportJson">Export progress (.json)</button><button id="importJson">Import progress (.json)</button><input type="file" id="fileInput" accept=".json,application/json" hidden><button id="reset">Reset all progress</button></div>
+  </section>
+  <footer>Completion means you can demonstrate the skill, explain the mechanism, or solve a representative problem—not merely that you watched a course or had an AI explain it.</footer>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const phases = [
+{title:"Phase 1 — Software Engineering Foundations",period:"Months 1–2",items:[
+["Python fundamentals and internals","Understand iterators, generators, decorators, context managers, typing, exceptions and memory behavior."],
+["Data structures and algorithms","Implement arrays, hash maps, trees, graphs, heaps, sorting and searching; understand complexity."],
+["Git and GitHub","Master branching, rebasing, merge conflicts, cherry-picking, bisecting, pull requests and safe reverts."],
+["Linux and Bash","Learn filesystems, permissions, processes, pipes, signals, environment variables, SSH and shell scripting."],
+["Operating systems","Understand processes vs threads, virtual memory, scheduling, locks, deadlocks and file descriptors."],
+["Networking fundamentals","Understand TCP/IP, DNS, HTTP, TLS, sockets, ports, proxies, timeouts and connection pooling."],
+["Testing and debugging","Write unit, integration and regression tests; use debuggers, logs, stack traces and minimal reproductions."],
+["Software design","Practise modularity, interfaces, dependency management, API contracts, code reviews and refactoring."]]},
+{title:"Phase 2 — Mathematics, ML and Computer Vision",period:"Months 3–4",items:[
+["Mathematical foundations","Refresh linear algebra, calculus, probability, statistics, optimization and numerical methods."],
+["Classical computer vision","Implement filtering, convolution, gradients, edge detection, morphology, contours and feature extraction."],
+["Image geometry","Understand camera calibration, coordinate systems, homographies, projective geometry and stereo vision."],
+["Deep learning fundamentals","Understand backpropagation, loss functions, optimizers, initialization, normalization and regularization."],
+["PyTorch workflows and internals","Master tensors, shapes, strides, autograd, Dataset/DataLoader, training loops and checkpointing."],
+["Vision architectures","Understand CNNs, residual networks, attention, transformers and relevant detection/segmentation architectures."],
+["Model evaluation","Use IoU, Dice, precision, recall and mAP; diagnose leakage, imbalance, overfitting and distribution shift."],
+["Reproducible ML experiments","Track configurations, seeds, datasets, checkpoints, metrics and experiment results."]]},
+{title:"Phase 3 — Cloud, Deployment and MLOps",period:"Months 5–6",items:[
+["AWS fundamentals","Understand IAM, S3, EC2, ECR, ECS, Lambda, networking, load balancers and CloudWatch."],
+["AWS security and cost","Use least-privilege IAM, secrets management, budgets, logs and cost-aware architecture decisions."],
+["Docker","Build reproducible images; understand layers, volumes, networks, multi-stage builds and container debugging."],
+["FastAPI and model serving","Build an inference API with validation, error handling, concurrency, health checks and versioned endpoints."],
+["CI/CD and deployment","Automate testing and builds; understand artifact registries, deployments, rollback and release management."],
+["Infrastructure as code","Build a small reproducible environment using Terraform or AWS CDK."],
+["MLOps and model lifecycle","Understand MLflow, DVC, model registries, data lineage and artifact versioning."],
+["Production observability","Measure latency, throughput, error rates, resource usage, model quality and operational failures."]]},
+{title:"Phase 4 — Computer Architecture and Hardware",period:"Months 7–8",items:[
+["Digital representation and machine execution","Understand binary, hexadecimal, pointers, data representation, instructions, compilers and linkers."],
+["CPU architecture","Learn cores, threads, caches, registers, pipelines, branch prediction, SIMD and vectorization."],
+["Memory hierarchy","Understand virtual memory, RAM, cache locality, bandwidth, latency, paging and NUMA."],
+["Storage and interconnects","Learn SSD behavior, PCIe, DMA, USB, Ethernet, NVLink and their performance implications."],
+["GPU architecture","Understand SMs, warps, scheduling, registers, occupancy, shared memory and global memory."],
+["GPU numerical computing","Understand FP32, FP16, BF16, FP8, accumulation precision, quantization and numerical stability."],
+["Imaging hardware","Understand CMOS sensors, optics, exposure, gain, shutter types, frame rates, noise and calibration."],
+["Drivers and system compatibility","Diagnose kernel modules, CUDA driver/runtime compatibility, shared libraries and device visibility."]]},
+{title:"Phase 5 — GPU Programming and Performance",period:"Months 8–10",items:[
+["CUDA programming model","Understand kernels, thread/block/grid indexing, memory allocation, synchronization and error handling."],
+["Implement basic CUDA kernels","Write vector addition, reductions, matrix multiplication and image-processing kernels."],
+["GPU memory optimization","Study coalescing, shared-memory tiling, register pressure, occupancy and transfer overhead."],
+["CUDA execution and concurrency","Understand streams, events, asynchronous transfers and synchronization hazards."],
+["Profiling with Nsight","Use Nsight Systems and Nsight Compute to identify CPU, transfer, memory and compute bottlenecks."],
+["PyTorch performance profiling","Profile model operators, data loading, batch sizes, GPU utilization and memory consumption."],
+["Inference optimization","Experiment with mixed precision, compilation, ONNX Runtime or TensorRT; measure accuracy and speed."],
+["Benchmarking discipline","Report warm-up, hardware, workload, throughput, p50/p95 latency, memory use and reproducible results."]]},
+{title:"Phase 6 — System Design and Production CV",period:"Months 9–11",items:[
+["End-to-end CV architecture","Design ingestion, preprocessing, inference, postprocessing, storage and result delivery."],
+["Distributed systems fundamentals","Understand queues, retries, timeouts, idempotency, backpressure and failure recovery."],
+["Performance and capacity planning","Estimate throughput, latency, memory requirements, scaling limits and cost per inference."],
+["Data engineering","Understand SQL, indexes, transactions, data validation, schemas, serialization and pipeline reliability."],
+["Model optimization and deployment","Build and compare baseline and optimized inference implementations under realistic loads."],
+["Production troubleshooting","Reproduce a failure, isolate its root cause, implement a fix and add a regression test."]]},
+{title:"Phase 7 — AI-Assisted Engineering and Independence",period:"Throughout the year",items:[
+["Repository comprehension","Trace entry points, call paths, dependencies, configurations and data flow before editing."],
+["Structured Claude Code usage","Write hypotheses, bounded tasks, acceptance criteria and verification plans before delegating."],
+["Independent code review","Inspect diffs, challenge assumptions, identify security risks and validate behavior independently."],
+["Unaided implementation practice","Regularly solve representative problems and debug familiar systems without generated implementations."],
+["Technical documentation","Maintain architecture diagrams, design decisions, setup instructions and operational runbooks."],
+["Engineering log","Record hypotheses, evidence, root causes, lessons and unresolved questions."],
+["Capstone system","Build and document a complete CV system, from data ingestion to optimized deployment."],
+["Final independence assessment","Explain the system, reproduce key components, diagnose injected failures and defend design trade-offs."]]}
+];
+const total=phases.reduce((n,p)=>n+p.items.length,0);
+const storageKey="project-groundtruth-progress-v1";
+let completed=new Set(); let filter="all"; let expanded=new Set([0]);
+try{completed=new Set(JSON.parse(localStorage.getItem(storageKey)||"[]"))}catch(e){}
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem(storageKey,JSON.stringify([...completed]))}catch(e){}}
+function updateStats(){
+ const n=completed.size; $("percent").textContent=Math.round(n/total*100)+"%"; $("count").textContent=`${n} of ${total} competencies completed`; $("remaining").textContent=total-n; $("mainBar").style.width=(n/total*100)+"%";
+ $("phasesDone").textContent=phases.filter((p,pi)=>p.items.every((it,ii)=>completed.has(`${pi}-${ii}`))).length+"/7";
+}
+function render(){
+ const root=$("checklist"); root.innerHTML="";
+ phases.forEach((p,pi)=>{
+  const count=p.items.filter((it,ii)=>completed.has(`${pi}-${ii}`)).length;
+  const visible=p.items.map((it,ii)=>({it,ii,id:`${pi}-${ii}`})).filter(x=>filter==="all"||(filter==="done"&&completed.has(x.id))||(filter==="remaining"&&!completed.has(x.id)));
+  if(!visible.length && filter!=="all") return;
+  const section=document.createElement("section");section.className="phase";
+  const head=document.createElement("div");head.className="phase-head";head.innerHTML=`<div><h2>${p.title}</h2><p>${p.period} · ${count}/${p.items.length} completed</p></div><span>${p.items.every((it,ii)=>completed.has(`${pi}-${ii}`))?"✓":expanded.has(pi)?"⌃":"⌄"}</span>`;
+  head.addEventListener("click",()=>{expanded.has(pi)?expanded.delete(pi):expanded.add(pi);render()});section.append(head);
+  const bar=document.createElement("div");bar.className="phase-progress";bar.innerHTML=`<div style="width:${count/p.items.length*100}%"></div>`;section.append(bar);
+  if(expanded.has(pi)){
+   const body=document.createElement("div");body.className="phase-body";
+   visible.forEach(({it,ii,id})=>{
+    const row=document.createElement("div");row.className="item"+(completed.has(id)?" done":"");
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=completed.has(id);cb.id="item-"+id;cb.addEventListener("change",()=>{cb.checked?completed.add(id):completed.delete(id);save();render()});
+    const label=document.createElement("label");label.htmlFor=cb.id;const title=document.createElement("strong");title.textContent=it[0];const desc=document.createElement("span");desc.textContent=it[1];label.append(title,desc);row.append(cb,label);body.append(row);
+   });
+   const actions=document.createElement("div");actions.className="actions";
+   const mark=document.createElement("button");mark.textContent="Mark phase complete";mark.onclick=()=>{p.items.forEach((it,ii)=>completed.add(`${pi}-${ii}`));save();render()};
+   const reset=document.createElement("button");reset.textContent="Reset phase";reset.onclick=()=>{p.items.forEach((it,ii)=>completed.delete(`${pi}-${ii}`));save();render()};
+   actions.append(mark,reset);body.append(actions);section.append(body);
+  }
+  root.append(section);
+ });
+ updateStats();
+}
+function toast(msg){const t=$("toast");t.textContent=msg;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
+function download(name,text,type){const blob=new Blob([text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function markdown(){return "# Project Groundtruth — Master Checklist\n\nProgress: "+completed.size+"/"+total+" ("+Math.round(completed.size/total*100)+"%)\n\n"+phases.map((p,pi)=>"## "+p.title+" ("+p.period+")\n\n"+p.items.map((it,ii)=>`- [${completed.has(`${pi}-${ii}`)?"x":" "}] **${it[0]}** — ${it[1]}`).join("\n")).join("\n\n")}
+$("exportMd").onclick=()=>{download("project-groundtruth-checklist.md",markdown(),"text/markdown");toast("Markdown checklist exported")};
+$("exportJson").onclick=()=>{download("project-groundtruth-progress.json",JSON.stringify({project:"Project Groundtruth",version:1,completed:[...completed]},null,2),"application/json");toast("Progress backup exported")};
+$("importJson").onclick=()=>$("fileInput").click();
+$("fileInput").onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.completed))throw Error();const valid=new Set(phases.flatMap((p,pi)=>p.items.map((it,ii)=>`${pi}-${ii}`)));completed=new Set(data.completed.filter(x=>valid.has(x)));save();render();toast("Progress imported")}catch(err){alert("That file doesn't look like a valid Groundtruth progress backup.")}e.target.value=""};
+$("reset").onclick=()=>{if(confirm("Reset all checklist progress? Export a backup first if you want to keep it.")){completed.clear();save();render();toast("Progress reset")}};
+document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render()});
+render();
+</script>
+</body>
+</html>
